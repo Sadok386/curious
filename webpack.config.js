@@ -1,5 +1,5 @@
 var Encore = require('@symfony/webpack-encore');
-
+const $ = require('jquery');
 Encore
     // the project directory where compiled assets will be stored
     .setOutputPath('public/build/')
@@ -18,7 +18,11 @@ Encore
     // .enableSassLoader()
 
     // uncomment for legacy applications that require $/jQuery as a global variable
-    // .autoProvidejQuery()
+    .autoProvideVariables({
+        $: 'jquery',
+        jQuery: 'jquery',
+        'window.jQuery': 'jquery',
+    })
 ;
 
 module.exports = Encore.getWebpackConfig();

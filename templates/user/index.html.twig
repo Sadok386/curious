@@ -1,0 +1,126 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello {{ controller_name }}!{% endblock %}
+
+{% block body %}
+<style>
+    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+    .table {
+        border-collapse: collapse;
+        width: 100%;
+
+    }
+    .td{
+        border: 1px solid #dddddd;
+
+        text-align: left;
+        padding: 8px;
+    }
+</style>
+    <a href="{{ path('newProjet') }}">Ajouter un nouveau projet</a>
+
+<div class="example-wrapper">
+    <h1>Hello {{ controller_name }}! ✅</h1>
+    <select id="userSelected" onchange="setCookie(365)" >
+        {% for user in users %}
+            <option value="{{ user.id }}">{{ user.nom }}</option>
+    {% endfor %}
+
+    </select>
+    <table class="table table-dark">
+        <tr>
+            <th>Ajout demi journée</th>
+            <th>Nom projet</th>
+            <th>Temps total</th>
+            {% for user in users %}
+                <th>{{ user.nom }}</th>
+            {% endfor %}
+        </tr>
+
+            {% for projet in projets %}
+                <tr>
+                    <td class="td">
+                        <a href="{{ path('update', {'projetId' : projet.id}) }}" class="btn">+0.5</a>
+                    </td>
+                    <td class="td">
+                        {{ projet.nom }}
+                    </td>
+                    <td class="td" id="total-{{ projet.id }}">
+                        {{ projet.total }}
+                    </td>
+                    {% for userTime in projet.usersTime %}
+                        <td class="td">{{ userTime.time }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+    </table>
+    <script>
+        const listBtn = document.getElementsByClassName('btn');
+        for(let listIndex in listBtn) {
+            listBtn[listIndex].onclick = function (event) {
+                event.preventDefault();
+
+                const userSelected = document.getElementById('userSelected').value;
+                const correctUrl = this.href.replace('/user', '');
+                const projetSelected = correctUrl.substr(correctUrl.lastIndexOf('/') + 1);
+                let request = new XMLHttpRequest();
+
+                request.open('GET', this.href + '/' + userSelected, true);
+
+                request.onload = function() {
+                    if (request.status >= 200 && request.status < 400) {
+                        // Success!
+                        const resp = request.responseText;
+                        document.getElementById('total-'+ projetSelected).innerHTML = resp;
+                        console.log('Requete ok', resp);
+                    } else {
+                        console.log('Requete fail');
+                    }
+                };
+
+                request.onerror = function(err) {
+                    console.log(err);
+                };
+
+                request.send();
+            };
+        }
+        function setCookie(days) {
+            const name = "userSelected";
+            const userSelected = document.getElementById(name).value;
+            var expires = "";
+            if (days) {
+                var date = new Date();
+                date.setTime(date.getTime() + (days*24*60*60*1000));
+                expires = "; expires=" + date.toUTCString();
+            }
+            document.cookie = name +'='+ userSelected + expires;
+        }
+        function setUserFromCookie() {
+            const userSelected = getCookie("userSelected");
+            const select = document.getElementById("userSelected");
+            select.value = userSelected;
+        }
+        function getCookie(name) {
+            name = name + "=";
+            var cookies = document.cookie.split(';');
+            for(var i = 0; i <cookies.length; i++) {
+                var cookie = cookies[i];
+                while (cookie.charAt(0)==' ') {
+                    cookie = cookie.substring(1);
+                }
+                if (cookie.indexOf(name) == 0) {
+                    return cookie.substring(name.length,cookie.length);
+                }
+            }
+            return "";
+        }
+        function eraseCookie(name) {
+            document.cookie = name+'=; Max-Age=-99999999;';
+        }
+
+        setUserFromCookie()
+    </script>
+</div>
+{% endblock %}
