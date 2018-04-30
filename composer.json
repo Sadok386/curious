@@ -24,7 +24,8 @@
         "symfony/web-link": "^4.0",
         "symfony/webpack-encore-pack": "*",
         "symfony/yaml": "^4.0",
-        "twbs/bootstrap": "^4.1"
+        "twbs/bootstrap": "^4.1",
+        "yectep/phpspreadsheet-bundle": "^0.0.4"
     },
     "require-dev": {
         "symfony/browser-kit": "^4.0",
@@ -78,6 +79,6 @@
             "id": "",
             "allow-contrib": false
         },
-        "symfony.id": "01CBYF48X605YXVZWCNQM761EV"
+        "symfony.id": "01CC1BA0N701X1Y5B1CAS4JM5R"
     }
 }

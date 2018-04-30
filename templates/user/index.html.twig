@@ -4,7 +4,7 @@
 
 {% block body %}
 <style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+    .example-wrapper { margin: 4em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
     .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
     .table {
         border-collapse: collapse;
@@ -18,17 +18,24 @@
         padding: 8px;
     }
 </style>
-    <a href="{{ path('newProjet') }}">Ajouter un nouveau projet</a>
+    <div class="row">
+        <div class="col s12 m3">
+            <img src="{{ asset('img/logo_gc.png') }}" alt="Logo Groupe Curious" class="responsive-img" style="margin-top: 10px">
+        </div>
+        <div class="input-field col s12 m3 offset-m6">
+            <select id="userSelected" class="icons" onchange="setCookie(365)" >
+                {% for user in users %}
+                    <option value="{{ user.id }}" class="left circle" data-icon="{{ asset('img/users/'~user.id~'.jpg') }}">{{ user.nom }}</option>
+                {% endfor %}
+                <option value="{{ path('newProjet') }}">ok</option>
+
+            </select>
+        </div>
+    </div>
 
 <div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
-    <select id="userSelected" onchange="setCookie(365)" >
-        {% for user in users %}
-            <option value="{{ user.id }}">{{ user.nom }}</option>
-    {% endfor %}
-
-    </select>
-    <table class="table table-dark">
+    <h3>Suivi des projets ✅</h3>
+    <table class="bordered responsive-table">
         <tr>
             <th>Ajout demi journée</th>
             <th>Nom projet</th>
@@ -39,23 +46,45 @@
         </tr>
 
             {% for projet in projets %}
-                <tr>
-                    <td class="td">
+                    <tr>
+                    <td>
                         <a href="{{ path('update', {'projetId' : projet.id}) }}" class="btn">+0.5</a>
                     </td>
-                    <td class="td">
-                        {{ projet.nom }}
+                        {% if projet.image != null %}
+                    <td>
+                        <div class="vertical" style="display:flex; align-items: center">
+                        <img class="responsive-img" style="width: 50px" src="{{ asset('img/projets/'~projet.image) }}">
+                        <p>{{ projet.nom }}</p>
+                        </div>
                     </td>
-                    <td class="td" id="total-{{ projet.id }}">
+                        {% else %}
+                        <td>{{ projet.nom }}</td>
+                        {% endif %}
+                    <td id="total-{{ projet.id }}">
                         {{ projet.total }}
                     </td>
                     {% for userTime in projet.usersTime %}
-                        <td class="td">{{ userTime.time }}</td>
+                        <td class="">{{ userTime.time }}</td>
                     {% endfor %}
                 </tr>
             {% endfor %}
     </table>
+    <div class="row">
+        <div class="col s10">
+            <a class="btn-floating btn-large waves-effect waves-light #2bbbad" href="{{ path('newProjet') }}" style="margin-top: 10px"><i class="material-icons">add</i></a>
+        </div>
+        <div class="col s2">
+            <a class="btn-floating btn-large waves-effect waves-light #2bbbad" href="{{ path('export') }}" style="margin-top: 10px"><i class="material-icons">file_download</i></a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
     <script>
+        $(document).ready(function() {
+            $('select').material_select();
+        });
         const listBtn = document.getElementsByClassName('btn');
         for(let listIndex in listBtn) {
             listBtn[listIndex].onclick = function (event) {
@@ -120,7 +149,7 @@
             document.cookie = name+'=; Max-Age=-99999999;';
         }
 
-        setUserFromCookie()
+        setUserFromCookie();
+
     </script>
-</div>
 {% endblock %}

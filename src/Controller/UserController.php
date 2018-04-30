@@ -5,16 +5,24 @@ namespace App\Controller;
 use App\Entity\Projet;
 use App\Entity\User;
 use App\Entity\UserTimeProjet;
+use App\Form\ProjetType;
 use Doctrine\DBAL\Types\FloatType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Routing\Annotation\Route;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\VarDumper\VarDumper;
+use ZipArchive;
 
 class UserController extends Controller
 {
@@ -30,7 +38,6 @@ class UserController extends Controller
 
         $repoProjet = $entityManager->getRepository('App\Entity\Projet');
         $repoUserProjet = $entityManager->getRepository('App\Entity\UserTimeProjet');
-        
         return $this->render('user/index.html.twig', [
             'controller_name' => 'UserController',
             'users'           => $repoUser->findAll(),
@@ -66,22 +73,36 @@ class UserController extends Controller
      */
     public function addProject(Request $request)
     {
-        $entityManager = $this->getDoctrine()->getManager();
-
         $projet = new Projet();
         $projet->setNom('Write a blog post');
+        $projet->setImage(null);
         $projet->setTotal(0);
 
-        $form = $this->createFormBuilder($projet)
-            ->add('nom', TextType::class)
-            ->add('save', SubmitType::class, array('label' => 'Create project'))
-            ->getForm();
+
+        $form = $this->createForm(ProjetType::class, $projet);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             // but, the original `$task` variable has also been updated
             $projet = $form->getData();
 
+            /** @var Symfony\Component\HttpFoundation\File\UploadedFile $file */
+            if ($projet->getImage() != null) {
+                $file = new File($projet->getImage());
+                $fileName = md5(uniqid()) . '.' . $file->guessExtension();
+
+                // moves the file to the directory where brochures are stored
+                $file->move(
+                    'assets/img/projets',
+                    $fileName
+                );
+
+                // updates the 'brochure' property to store the PDF file name
+                // instead of its contents
+                $projet->setImage($fileName);
+            }
+
+            $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($projet);
 
             $entityManager = $this->getDoctrine()->getManager();
@@ -105,5 +126,20 @@ class UserController extends Controller
         return $this->render('projet/index.html.twig', [
             'form' => $form->createView(),
         ]);
+    }
+    public function showParentAndChild(){
+        
+    }
+    /**
+     * @Route("/export", name="export")
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function ExcelExportAction(Request $request)
+    {
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setCellValue('A1', 'Hello World !');
+        $writer = new Xlsx($spreadsheet);
+        $writer->save('hello world.xlsx');
     }
 }
