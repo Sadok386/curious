@@ -3,29 +3,45 @@
 {% block title %}Hello {{ controller_name }}!{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 4em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-    .table {
-        border-collapse: collapse;
-        width: 100%;
+    <style>
+        .example-wrapper {
+            margin: 4em auto;
+            max-width: 800px;
+            width: 95%;
+            font: 18px/1.5 sans-serif;
+        }
 
-    }
-    .td{
-        border: 1px solid #dddddd;
+        .example-wrapper code {
+            background: #F5F5F5;
+            padding: 2px 6px;
+        }
 
-        text-align: left;
-        padding: 8px;
-    }
-</style>
+        .table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        .td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        .flgrow {
+            flex-grow: 1;
+            text-align: right;
+        }
+    </style>
     <div class="row">
         <div class="col s12 m3">
-            <img src="{{ asset('img/logo_gc.png') }}" alt="Logo Groupe Curious" class="responsive-img" style="margin-top: 10px">
+            <img src="{{ asset('img/logo_gc.png') }}" alt="Logo Groupe Curious" class="responsive-img"
+                 style="margin-top: 10px">
         </div>
         <div class="input-field col s12 m3 offset-m6">
-            <select id="userSelected" class="icons" onchange="setCookie(365)" >
+            <select id="userSelected" class="icons" onchange="setCookie(365)">
                 {% for user in users %}
-                    <option value="{{ user.id }}" class="left circle" data-icon="{{ asset('img/users/'~user.id~'.jpg') }}">{{ user.nom }}</option>
+                    <option value="{{ user.id }}" class="left circle"
+                            data-icon="{{ asset('img/users/'~user.id~'.jpg') }}">{{ user.nom }}</option>
                 {% endfor %}
                 <option value="{{ path('newProjet') }}">ok</option>
 
@@ -33,98 +49,66 @@
         </div>
     </div>
 
-<div class="example-wrapper">
-    <h3>Suivi des projets ✅</h3>
-    <table class="bordered responsive-table">
-        <tr>
-            <th>Ajout demi journée</th>
-            <th>Nom projet</th>
-            <th>Temps total</th>
-            {% for user in users %}
-                <th>{{ user.nom }}</th>
-            {% endfor %}
-        </tr>
+    <div class="example-wrapper">
+        <h3>Suivi des projets ✅</h3>
 
+        <ul class="collapsible popout">
             {% for projet in projets %}
-                    <tr>
-                    <td>
-                        <a href="{{ path('update', {'projetId' : projet.id}) }}" class="btn">+0.5</a>
-                    </td>
-                        {% if projet.image != null %}
-                    <td>
-                        <div class="vertical" style="display:flex; align-items: center">
-                        <img class="responsive-img" style="width: 50px" src="{{ asset('img/projets/'~projet.image) }}">
-                        <p>{{ projet.nom }}</p>
-                        </div>
-                    </td>
-                        {% else %}
-                        <td>{{ projet.nom }}</td>
-                        {% endif %}
-                    <td id="total-{{ projet.id }}">
-                        {{ projet.total }}
-                    </td>
-                    {% for userTime in projet.usersTime %}
-                        <td class="">{{ userTime.time }}</td>
-                    {% endfor %}
-                </tr>
+                {{ include('user/recursive.html.twig', { projet: projet}) }}
             {% endfor %}
-    </table>
-    <div class="row">
-        <div class="col s10">
-            <a class="btn-floating btn-large waves-effect waves-light #2bbbad" href="{{ path('newProjet') }}" style="margin-top: 10px"><i class="material-icons">add</i></a>
-        </div>
-        <div class="col s2">
-            <a class="btn-floating btn-large waves-effect waves-light #2bbbad" href="{{ path('export') }}" style="margin-top: 10px"><i class="material-icons">file_download</i></a>
-        </div>
+            <div class="row">
+                <div class="col s10">
+                    <a class="btn-floating btn-large waves-effect waves-light #2bbbad" href="{{ path('newProjet') }}"
+                       style="margin-top: 10px"><i class="material-icons">add</i></a>
+                </div>
+            </div>
+        </ul>
     </div>
-</div>
 {% endblock %}
 {% block javascripts %}
     {{ parent() }}
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             $('select').material_select();
+            $('.collapsible').collapsible();
+
         });
-        const listBtn = document.getElementsByClassName('btn');
-        for(let listIndex in listBtn) {
+        const listBtn = $('.btn');
+        for (let listIndex in listBtn) {
             listBtn[listIndex].onclick = function (event) {
                 event.preventDefault();
 
                 const userSelected = document.getElementById('userSelected').value;
                 const correctUrl = this.href.replace('/user', '');
                 const projetSelected = correctUrl.substr(correctUrl.lastIndexOf('/') + 1);
-                let request = new XMLHttpRequest();
 
-                request.open('GET', this.href + '/' + userSelected, true);
+                console.log(userSelected);
 
-                request.onload = function() {
-                    if (request.status >= 200 && request.status < 400) {
-                        // Success!
-                        const resp = request.responseText;
-                        document.getElementById('total-'+ projetSelected).innerHTML = resp;
-                        console.log('Requete ok', resp);
-                    } else {
-                        console.log('Requete fail');
+                $.get( this.href + "/" + userSelected, function( data ) {
+                    // Success!
+                    $('#total-' + projetSelected).html(data.total);
+
+                    for(let userId in data.users) {
+                        const user = data.users[userId];
+                        $('#totalUserTime-' + projetSelected + '-' + user.id).html(user.total);
                     }
-                };
 
-                request.onerror = function(err) {
-                    console.log(err);
-                };
+                    console.log('Requete ok', data);
+                });
 
-                request.send();
             };
         }
+
         function setCookie(days) {
             const name = "userSelected";
             const userSelected = document.getElementById(name).value;
             var expires = "";
             if (days) {
                 var date = new Date();
-                date.setTime(date.getTime() + (days*24*60*60*1000));
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
                 expires = "; expires=" + date.toUTCString();
             }
-            document.cookie = name +'='+ userSelected + expires;
+            document.cookie = name + '=' + userSelected + expires;
         }
         function setUserFromCookie() {
             const userSelected = getCookie("userSelected");
@@ -134,19 +118,19 @@
         function getCookie(name) {
             name = name + "=";
             var cookies = document.cookie.split(';');
-            for(var i = 0; i <cookies.length; i++) {
+            for (var i = 0; i < cookies.length; i++) {
                 var cookie = cookies[i];
-                while (cookie.charAt(0)==' ') {
+                while (cookie.charAt(0) == ' ') {
                     cookie = cookie.substring(1);
                 }
                 if (cookie.indexOf(name) == 0) {
-                    return cookie.substring(name.length,cookie.length);
+                    return cookie.substring(name.length, cookie.length);
                 }
             }
             return "";
         }
         function eraseCookie(name) {
-            document.cookie = name+'=; Max-Age=-99999999;';
+            document.cookie = name + '=; Max-Age=-99999999;';
         }
 
         setUserFromCookie();

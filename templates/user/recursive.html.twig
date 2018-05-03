@@ -1,0 +1,60 @@
+<li>
+    {% if projet.image != null %}
+        <div class="collapsible-header vertical" style="display:flex; align-items: center">
+
+            <img class="responsive-img" style="width: 50px"
+                 src="{{ asset('img/projets/'~projet.image) }}">
+            <p>{{ projet.nom }}</p>
+            <p class="flgrow">Total : <span id="totalParent-{{ projet.id }}">{{ projet.total }}</span>j</p>
+        </div>
+    {% else %}
+        <div class="collapsible-header">
+            <p>{{ projet.nom }}</p>
+            <p class="flgrow">Total : <span id="totalParent-{{ projet.id }}">{{ projet.total }}</span>j</p>
+        </div>
+    {% endif %}
+    <div class="collapsible-body">
+        {% if projet.enfants.count() == 0 %}
+            <table class="bordered responsive-table">
+                <tr>
+                    <th>Ajout demi journée</th>
+                    <th>Temps total</th>
+                    {% for user in users %}
+                        <th>{{ user.nom }}</th>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>
+                        <a href="{{ path('update', {'projetId' : projet.id}) }}"
+                           class="btn">+0.5</a>
+                    </td>
+                    <td id="total-{{ projet.id }}">
+                        {{ projet.total }}
+                    </td>
+                    {% for userTime in projet.usersTime %}
+                        <td id="totalUserTime-{{ projet.id }}-{{ userTime.user.id }}">{{ userTime.time }}</td>
+                    {% endfor %}
+                </tr>
+            </table>
+        {% else %}
+            <ul class="collapsible">
+                {% for projetEnfant in projet.enfants %}
+                    {{ include('user/recursive.html.twig', { projet: projetEnfant}) }}
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <div class="row">
+            <div class="col s10">
+                <a class="btn-floating btn-large waves-effect waves-light #2bbbad"
+                   href="{{ path('newProjet') }}" style="margin-top: 10px"><i
+                            class="material-icons">add</i></a>
+            </div>
+            <div class="col s2">
+                <a class="btn-floating btn-large waves-effect waves-light #2bbbad"
+                   href="{{ path('export') }}"
+                   style="margin-top: 10px"><i class="material-icons">file_download</i></a>
+            </div>
+        </div>
+    </div>
+</li>

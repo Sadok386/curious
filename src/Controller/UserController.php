@@ -22,7 +22,6 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\VarDumper\VarDumper;
-use ZipArchive;
 
 class UserController extends Controller
 {
@@ -38,10 +37,14 @@ class UserController extends Controller
 
         $repoProjet = $entityManager->getRepository('App\Entity\Projet');
         $repoUserProjet = $entityManager->getRepository('App\Entity\UserTimeProjet');
+        $allChild = $repoProjet->findTime(2);
+        VarDumper::dump($allChild);
+//        $toto=$this->calculTotalProjet();
+
         return $this->render('user/index.html.twig', [
             'controller_name' => 'UserController',
             'users'           => $repoUser->findAll(),
-            'projets' => $repoProjet->findAll(),
+            'projets' => $repoProjet->findAllRacine(),
             'userProjets' => $repoUserProjet->findAll()
         ]);
     }
@@ -63,9 +66,28 @@ class UserController extends Controller
         // Projet
         $projet = $em->getRepository('App\Entity\Projet')->find($projetId);
         $projet->incrementTotal();
-        
         $em->flush();
-        return new JsonResponse($projet->getTotal());
+
+//        $parent = ...
+
+        $result = [
+            'total' => $projet->getTotal(),
+            'users' => [],
+            'parent' => [
+                'id' => 0,
+                'total' => 0
+            ]
+        ];
+        $userTimeProjets = $em->getRepository('App\Entity\UserTimeProjet')->findBy([
+            'projet' => $projetId
+        ]);
+        foreach ($userTimeProjets as $userTimeProjet) {
+            $result['users'][] = [
+                'id' => $userTimeProjet->getUser()->getId(),
+                'total' => $userTimeProjet->getTime()
+            ];
+        }
+        return new JsonResponse($result);
     }
     /**
      * @Route("/newProjet", name="newProjet")
@@ -76,10 +98,14 @@ class UserController extends Controller
         $projet = new Projet();
         $projet->setNom('Write a blog post');
         $projet->setImage(null);
+        $projet->setParent(null);
         $projet->setTotal(0);
 
+        $entityManager = $this->getDoctrine()->getManager();
 
-        $form = $this->createForm(ProjetType::class, $projet);
+        $form = $this->createForm(ProjetType::class, $projet, array(
+            'entity_manager' => $entityManager,
+        ));
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -102,7 +128,6 @@ class UserController extends Controller
                 $projet->setImage($fileName);
             }
 
-            $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($projet);
 
             $entityManager = $this->getDoctrine()->getManager();
@@ -115,6 +140,7 @@ class UserController extends Controller
                 $userProjet = new UserTimeProjet();
                 $userProjet->setUser($user);
                 $userProjet->setProjet($projet);
+                $userProjet->setTime(0);
                 $entityManager->persist($userProjet);
             }
 
@@ -126,6 +152,23 @@ class UserController extends Controller
         return $this->render('projet/index.html.twig', [
             'form' => $form->createView(),
         ]);
+    }
+
+    public function calculTotalProjet()
+    {
+        $entityManager = $this->getDoctrine()->getManager();
+        $repoProjet = $entityManager->getRepository('App\Entity\Projet');
+
+        $allProject = $repoProjet->findAll();
+
+        foreach ($allProject as $projet) {
+            if ($projet->getEnfants() != null) {
+                foreach ($projet->getEnfants() as $projetEnfant) {
+                    VarDumper::dump($projetEnfant);
+
+                }
+            }
+        }
     }
     public function showParentAndChild(){
         

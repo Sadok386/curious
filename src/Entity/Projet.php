@@ -31,16 +31,19 @@ class Projet
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\UserTimeProjet", mappedBy="projet")
+     * @ORM\OrderBy({"user" = "ASC"})
      */
     private $usersTime;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Projet", inversedBy="enfants")
+     * @ORM\OrderBy({"nom" = "ASC"})
      */
     private $parent;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Projet", mappedBy="parent")
+     * @ORM\OrderBy({"nom" = "ASC"})
      */
     private $enfants;
 
@@ -150,5 +153,9 @@ class Projet
         $this->image = $image;
 
         return $this;
+    }
+
+    public function __toString() {
+        return $this->getNom();
     }
 }

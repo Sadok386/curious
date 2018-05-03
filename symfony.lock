@@ -122,6 +122,9 @@
             "ref": "aaddfdf43cdecd4cf91f992052d76c2cadc04543"
         }
     },
+    "snilius/twig-sort-by-field": {
+        "version": "v0.1.5"
+    },
     "swiftmailer/swiftmailer": {
         "version": "v6.0.2"
     },
