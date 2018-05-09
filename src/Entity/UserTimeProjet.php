@@ -24,7 +24,7 @@ class UserTimeProjet
     private $user;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Projet", inversedBy="usersTime", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="App\Entity\Projet", inversedBy="usersTime", cascade={"persist"}, cascade={"remove"})
      * @ORM\JoinColumn(nullable=false)
      * @ORM\OrderBy({"nom" = "ASC"})
      */

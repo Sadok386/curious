@@ -42,15 +42,15 @@ class ProjetRepository extends ServiceEntityRepository
             ->getResult()
             ;
     }
-    public function findTime($projet){
+    public function findTime(){
         return $this->createQueryBuilder('p')
-            ->andWhere('p.parent IS NOT NULL')
-            ->andWhere('p.id = :val')
-            ->setParameter('val', $projet)
+            ->addOrderBy('p.parent', 'ASC')
+            ->addOrderBy('p.nom', 'ASC')
             ->getQuery()
             ->getResult()
             ;
     }
+
 
     public function findAllRacine(){
         return $this->findBy(array("parent" => null), array("nom" => "ASC"));

@@ -71,11 +71,17 @@
     "egulias/email-validator": {
         "version": "2.1.4"
     },
+    "egyg33k/csv-bundle": {
+        "version": "1.0.1"
+    },
     "fig/link-util": {
         "version": "1.0.0"
     },
     "jdorn/sql-formatter": {
         "version": "v1.2.17"
+    },
+    "league/csv": {
+        "version": "9.1.4"
     },
     "monolog/monolog": {
         "version": "1.23.0"

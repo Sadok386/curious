@@ -976,106 +976,101 @@
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="248" parent="243" name="total">
+    <column id="248" parent="243" name="parent_id">
       <Position>3</Position>
-      <DataType>double|0s</DataType>
-      <ColumnKind>normal</ColumnKind>
-    </column>
-    <column id="249" parent="243" name="parent_id">
-      <Position>4</Position>
       <DataType>int(11)|0s</DataType>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="250" parent="243" name="image">
-      <Position>5</Position>
+    <column id="249" parent="243" name="image">
+      <Position>4</Position>
       <DataType>varchar(255)|0s</DataType>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <index id="251" parent="243" name="IDX_50159CA9727ACA70">
+    <index id="250" parent="243" name="IDX_50159CA9727ACA70">
       <ColNames>parent_id</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="252" parent="243" name="PRIMARY">
+    <key id="251" parent="243" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="253" parent="243" name="FK_50159CA9727ACA70">
+    <foreign-key id="252" parent="243" name="FK_50159CA9727ACA70">
       <ColNames>parent_id</ColNames>
       <RefSchemaName>curious</RefSchemaName>
       <RefTableName>projet</RefTableName>
       <RefKeyName>PRIMARY</RefKeyName>
       <RefColNames>id</RefColNames>
     </foreign-key>
-    <column id="254" parent="244" name="id">
+    <column id="253" parent="244" name="id">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>1</SequenceIdentity>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="255" parent="244" name="nom">
+    <column id="254" parent="244" name="nom">
       <Position>2</Position>
       <DataType>varchar(255)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="256" parent="244" name="prenom">
+    <column id="255" parent="244" name="prenom">
       <Position>3</Position>
       <DataType>varchar(255)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <key id="257" parent="244" name="PRIMARY">
+    <key id="256" parent="244" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="258" parent="245" name="id">
+    <column id="257" parent="245" name="id">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>1</SequenceIdentity>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="259" parent="245" name="user_id">
+    <column id="258" parent="245" name="user_id">
       <Position>2</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="260" parent="245" name="projet_id">
+    <column id="259" parent="245" name="projet_id">
       <Position>3</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="261" parent="245" name="time">
+    <column id="260" parent="245" name="time">
       <Position>4</Position>
       <DataType>double|0s</DataType>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <index id="262" parent="245" name="IDX_A0F81ACAA76ED395">
+    <index id="261" parent="245" name="IDX_A0F81ACAA76ED395">
       <ColNames>user_id</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="263" parent="245" name="IDX_A0F81ACAC18272">
+    <index id="262" parent="245" name="IDX_A0F81ACAC18272">
       <ColNames>projet_id</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="264" parent="245" name="PRIMARY">
+    <key id="263" parent="245" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="265" parent="245" name="FK_A0F81ACAA76ED395">
+    <foreign-key id="264" parent="245" name="FK_A0F81ACAA76ED395">
       <ColNames>user_id</ColNames>
       <RefSchemaName>curious</RefSchemaName>
       <RefTableName>user</RefTableName>
       <RefKeyName>PRIMARY</RefKeyName>
       <RefColNames>id</RefColNames>
     </foreign-key>
-    <foreign-key id="266" parent="245" name="FK_A0F81ACAC18272">
+    <foreign-key id="265" parent="245" name="FK_A0F81ACAC18272">
       <ColNames>projet_id</ColNames>
       <RefSchemaName>curious</RefSchemaName>
       <RefTableName>projet</RefTableName>

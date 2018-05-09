@@ -1,3 +1,12 @@
+<style>
+    .btn{
+        background-color: rgba(244, 0, 18, 0.80); !important;
+    }
+    .btn:hover{
+        background-color: #F40012; !important;
+
+    }
+</style>
 <li>
     {% if projet.image != null %}
         <div class="collapsible-header vertical" style="display:flex; align-items: center">
@@ -26,7 +35,7 @@
                 <tr>
                     <td>
                         <a href="{{ path('update', {'projetId' : projet.id}) }}"
-                           class="btn">+0.5</a>
+                           class="btn addTime">+0.5</a>
                     </td>
                     <td id="total-{{ projet.id }}">
                         {{ projet.total }}
@@ -45,13 +54,32 @@
         {% endif %}
 
         <div class="row">
-            <div class="col s10">
-                <a class="btn-floating btn-large waves-effect waves-light #2bbbad"
+            <div class="col s3">
+                <a class="btn-floating btn-large waves-effect waves-light redCurious"
                    href="{{ path('newProjet') }}" style="margin-top: 10px"><i
                             class="material-icons">add</i></a>
             </div>
-            <div class="col s2">
-                <a class="btn-floating btn-large waves-effect waves-light #2bbbad"
+            <div class="col s3">
+                <a class="btn-floating btn-large waves-effect waves-light redCurious modal-trigger" href="#modal-{{ projet.id }}"
+                    style="margin-top: 10px"><i class="material-icons">delete</i></a>
+                <div id="modal-{{ projet.id }}" class="modal">
+                    <div class="modal-content">
+                        <h4>Supprimer {{ projet.nom }}</h4>
+                        <p>Etes vous sur de vouloir supprimer ce projet?</p>
+                        <p>Cette action est irréversible (pour le moment)</p>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="" class="modal-close waves-effect waves-green btn-flat">Annuler</a>
+                        <a href="{{ path('remove', {'projetId' : projet.id}) }}" class="modal-close waves-effect waves-green btn-flat">Supprimer</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col s3">
+                <a href="{{ path('remove', {'projetId' : projet.id}) }}"
+                   class="btn-floating btn-large waves-effect waves-light redCurious" style="margin-top: 10px"><i class="material-icons">edit</i></a>
+            </div>
+                <div class="col s3">
+                <a class="btn-floating btn-large waves-effect waves-light redCurious"
                    href="{{ path('export') }}"
                    style="margin-top: 10px"><i class="material-icons">file_download</i></a>
             </div>

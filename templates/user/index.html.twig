@@ -10,7 +10,12 @@
             width: 95%;
             font: 18px/1.5 sans-serif;
         }
-
+        .redCurious {
+            background-color: #F40012; !important;
+        }
+        .btn-floating:hover{
+            background-color: rgba(244, 0, 18, 0.60); !important;
+        }
         .example-wrapper code {
             background: #F5F5F5;
             padding: 2px 6px;
@@ -58,7 +63,7 @@
             {% endfor %}
             <div class="row">
                 <div class="col s10">
-                    <a class="btn-floating btn-large waves-effect waves-light #2bbbad" href="{{ path('newProjet') }}"
+                    <a class="btn-floating btn-large waves-effect waves-light redCurious" href="{{ path('newProjet') }}"
                        style="margin-top: 10px"><i class="material-icons">add</i></a>
                 </div>
             </div>
@@ -73,7 +78,7 @@
             $('.collapsible').collapsible();
 
         });
-        const listBtn = $('.btn');
+        const listBtn = $('.btn.addTime');
         for (let listIndex in listBtn) {
             listBtn[listIndex].onclick = function (event) {
                 event.preventDefault();
@@ -87,6 +92,7 @@
                 $.get( this.href + "/" + userSelected, function( data ) {
                     // Success!
                     $('#total-' + projetSelected).html(data.total);
+                    $('#totalParent-' + projetSelected).html(data.total);
 
                     for(let userId in data.users) {
                         const user = data.users[userId];
@@ -134,6 +140,11 @@
         }
 
         setUserFromCookie();
+        // Or with jQuery
+
+        $(document).ready(function(){
+            $('.modal').modal();
+        });
 
     </script>
 {% endblock %}

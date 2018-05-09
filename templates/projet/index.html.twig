@@ -1,4 +1,27 @@
 {% extends 'base.html.twig' %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('jquery.tree-multiselect.min.css') }}">
+    <style>
+        div.tree-multiselect div.title::selection {
+            background-color: #fff;
+        }
+        div.tree-multiselect div.title>span.collapse-section {
+            color: #777;
+            margin: 0 3px;
+            margin-left: -2px;
+            font-size: 19px;
+            font-weight: bold;
+            width: 8px;
+        }
+        div.tree-multiselect div.title {
+            margin-top: -42px;
+            background: #7770;
+            color: white;
+            padding: 2px;
+        }
+    </style>
+{% endblock %}
 
 {% block title %}Hello{% endblock %}
 
@@ -16,6 +39,9 @@
 {% block javascripts %}
     {{ parent() }}
 <script>
-$('select').material_select();
+    $("select").treeMultiselect({
+        'allowBatchSelection': false,
+        'hideSidePanel': true
+    });
 </script>
 {% endblock %}

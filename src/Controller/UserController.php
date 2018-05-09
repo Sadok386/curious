@@ -6,7 +6,10 @@ use App\Entity\Projet;
 use App\Entity\User;
 use App\Entity\UserTimeProjet;
 use App\Form\ProjetType;
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\FloatType;
+use PDO;
+use SplTempFileObject;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -15,11 +18,12 @@ use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Routing\Annotation\Route;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-
+use League\Csv\Writer;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\VarDumper\VarDumper;
 
@@ -37,9 +41,6 @@ class UserController extends Controller
 
         $repoProjet = $entityManager->getRepository('App\Entity\Projet');
         $repoUserProjet = $entityManager->getRepository('App\Entity\UserTimeProjet');
-        $allChild = $repoProjet->findTime(2);
-        VarDumper::dump($allChild);
-//        $toto=$this->calculTotalProjet();
 
         return $this->render('user/index.html.twig', [
             'controller_name' => 'UserController',
@@ -65,10 +66,8 @@ class UserController extends Controller
         
         // Projet
         $projet = $em->getRepository('App\Entity\Projet')->find($projetId);
-        $projet->incrementTotal();
         $em->flush();
 
-//        $parent = ...
 
         $result = [
             'total' => $projet->getTotal(),
@@ -99,7 +98,6 @@ class UserController extends Controller
         $projet->setNom('Write a blog post');
         $projet->setImage(null);
         $projet->setParent(null);
-        $projet->setTotal(0);
 
         $entityManager = $this->getDoctrine()->getManager();
 
@@ -153,6 +151,34 @@ class UserController extends Controller
             'form' => $form->createView(),
         ]);
     }
+    /**
+     * @Route("/remove/{projetId}", name="remove")
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function removeProject($projetId){
+        $entityManager = $this->getDoctrine()->getManager();
+        $projet = $entityManager->getRepository('App\Entity\Projet')->find($projetId);
+        $projetUsers = $projet->getUsersTime();
+        $projetEnfant = $projet->getEnfants();
+        foreach ($projetEnfant as $enfants){
+            $enfantUserTime = $enfants->getUsersTime();
+            foreach ($enfantUserTime as $userTimeEnfant) {
+                $entityManager->remove($userTimeEnfant);
+                $entityManager->remove($enfants);
+            }
+        }
+
+        foreach ($projetUsers as $projetUser)
+        {
+            $entityManager->remove($projetUser);
+        }
+        if (!$projet) {
+            throw $this->createNotFoundException('No guest found for id '.$projetId);
+        }
+        $entityManager->remove($projet);
+        $entityManager->flush();
+        return $this->redirectToRoute('user');
+    }
 
     public function calculTotalProjet()
     {
@@ -177,12 +203,64 @@ class UserController extends Controller
      * @Route("/export", name="export")
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function ExcelExportAction(Request $request)
+    public function ExcelExportAction()
+        {
+            $response = new StreamedResponse();
+            $response->setCallback(function() {
+                $handle = fopen('php://output', 'w+');
+                $entityManager = $this->getDoctrine()->getManager();
+                $projets = $entityManager->getRepository('App\Entity\Projet')->findAll();
+                $users = $entityManager->getRepository('App\Entity\User')->findAll();
+
+
+                $toCsv = array('Nom du Projet','Parent','Total');
+                foreach ($users as $user){
+                    $toCsv[] = $user->getNom();
+                }
+                fputcsv($handle, $toCsv,';');
+
+                foreach ($projets as $projet){
+                $section = [];
+                $parent = $projet->getParent();
+
+                while ($parent != null) {
+                    $section[] = $parent->getNom();
+                    $parent = $parent->getParent();
+                }
+
+                $section = array_reverse($section);
+                $sectionString = implode("/", $section);
+
+                // Query data from database
+                // Add the data queried from database
+
+
+                    $toCsv = array($sectionString,$projet->getParent(), $projet->getTotal());
+
+                    foreach ($projet->getUserstime() as $userProjet){
+                        $toCsv[] = $userProjet->getTime();
+                    }
+
+                    fputcsv(
+                        $handle, // The file pointer
+                        $toCsv, // The fields
+                        ';' // The delimiter
+                    );
+                }
+
+                fclose($handle);
+            });
+
+            $response->setStatusCode(200);
+            $response->headers->set('Content-Type', 'text/csv; charset=utf-8');
+            $response->headers->set('Content-Disposition', 'attachment; filename="export.csv"');
+
+            return $response;
+        }
+    private $connection;
+
+    public function __construct(Connection $connection)
     {
-        $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
-        $sheet->setCellValue('A1', 'Hello World !');
-        $writer = new Xlsx($spreadsheet);
-        $writer->save('hello world.xlsx');
+        $this->connection = $connection;
     }
 }

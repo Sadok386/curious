@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -10,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ProjetRepository")
  */
-class Projet
+class Projet extends Controller
 {
     /**
      * @ORM\Id()
@@ -25,12 +26,7 @@ class Projet
     private $nom;
 
     /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $total;
-
-    /**
-     * @ORM\OneToMany(targetEntity="App\Entity\UserTimeProjet", mappedBy="projet")
+     * @ORM\OneToMany(targetEntity="App\Entity\UserTimeProjet", mappedBy="projet", cascade={"remove"})
      * @ORM\OrderBy({"user" = "ASC"})
      */
     private $usersTime;
@@ -42,7 +38,7 @@ class Projet
     private $parent;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Projet", mappedBy="parent")
+     * @ORM\OneToMany(targetEntity="App\Entity\Projet", mappedBy="parent", cascade={"remove"})
      * @ORM\OrderBy({"nom" = "ASC"})
      */
     private $enfants;
@@ -115,20 +111,26 @@ class Projet
 
     public function getTotal(): ?float
     {
-        return $this->total;
+
+
+        $users = $this->getUsersTime();
+        $users = array_map(function ($user) {
+            return $user->getTime();
+        }, $users->toArray());
+        $total = array_reduce($users, function ($userPrecTime, $userSuivTime) {
+            return $userPrecTime + $userSuivTime;
+        }, 0);
+
+        $enfants = $this->getEnfants();
+        $enfants = array_map(function ($enfant){
+                return $enfant->getTotal();
+            },$enfants->toArray());
+        $total += array_reduce($enfants, function ($enfantPrecTotal, $enfantSuivTotal){
+           return $enfantPrecTotal + $enfantSuivTotal;
+        },0);
+        return $total;
     }
 
-    public function setTotal(?float $total): self
-    {
-        $this->total = $total;
-
-        return $this;
-    }
-
-    public function incrementTotal()
-    {
-        $this->total += 0.5;
-    }
 
     /**
      * @return Collection|UserTimeProjet[]
