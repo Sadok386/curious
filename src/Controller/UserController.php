@@ -89,13 +89,35 @@ class UserController extends Controller
         return new JsonResponse($result);
     }
     /**
+     * @Route("/fileuploadhandler", name="fileuploadhandler")
+     */
+    public function fileUploadHandler(Request $request) {
+        $output = array('uploaded' => false);
+        // get the file from the request object
+        $file = $request->files->get('file');
+        // generate a new filename (safer, better approach)
+        // To use original filename, $fileName = $this->file->getClientOriginalName();
+        $fileName = md5(uniqid()).'.'.$file->guessExtension();
+
+        // set your uploads directory
+        $uploadDir = $this->get('kernel')->getRootDir() . '/../web/uploads/';
+        if (!file_exists($uploadDir) && !is_dir($uploadDir)) {
+            mkdir($uploadDir, 0775, true);
+        }
+        if ($file->move($uploadDir, $fileName)) {
+            $output['uploaded'] = true;
+            $output['fileName'] = $fileName;
+        }
+        return new JsonResponse($output);
+    }
+    /**
      * @Route("/newProjet", name="newProjet")
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function addProject(Request $request)
     {
         $projet = new Projet();
-        $projet->setNom('Write a blog post');
+        $projet->setNom('');
         $projet->setImage(null);
         $projet->setParent(null);
 
@@ -221,21 +243,21 @@ class UserController extends Controller
 
                 foreach ($projets as $projet){
                 $section = [];
-                $parent = $projet->getParent();
+                $projetNom = $projet->getNom();
 
-                while ($parent != null) {
+                /*while ($parent != null) {
                     $section[] = $parent->getNom();
                     $parent = $parent->getParent();
                 }
 
                 $section = array_reverse($section);
-                $sectionString = implode("/", $section);
+                $sectionString = implode("/", $section);*/
 
                 // Query data from database
                 // Add the data queried from database
 
 
-                    $toCsv = array($sectionString,$projet->getParent(), $projet->getTotal());
+                    $toCsv = array($projetNom,$projet->getParent(), $projet->getTotal());
 
                     foreach ($projet->getUserstime() as $userProjet){
                         $toCsv[] = $userProjet->getTime();

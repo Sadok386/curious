@@ -30,7 +30,7 @@ class ProjetType extends AbstractType
             ->add('image', FileType::class,
                 array(
                     'required' => false,
-                    'label' => 'Brochure (PDF file)')
+                    'label' => 'Logo')
             )
             ->add('parent', EntityType::class, [
                 'class' => 'App\Entity\Projet',
