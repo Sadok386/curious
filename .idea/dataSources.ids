@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component name="dataSourceStorage">
   <data-source name="MySQL - curious@localhost" uuid="4db940ce-e158-4737-b2f0-ca37eb7bd2e5">
-    <database-info product="MySQL" version="5.7.21-0ubuntu0.16.04.1" jdbc-version="4.0" driver-name="MySQL Connector Java" driver-version="mysql-connector-java-5.1.46 ( Revision: 9cc87a48e75c2d2e87c1a293b2862ce651cb256e )">
+    <database-info product="MySQL" version="5.7.22-0ubuntu0.16.04.1" jdbc-version="4.0" driver-name="MySQL Connector Java" driver-version="mysql-connector-java-5.1.46 ( Revision: 9cc87a48e75c2d2e87c1a293b2862ce651cb256e )">
       <extra-name-characters>#@</extra-name-characters>
       <identifier-quote-string>`</identifier-quote-string>
     </database-info>
@@ -23,62 +23,75 @@
       <column id="7" parent="2" name="total">
         <data-type>double</data-type>
       </column>
-      <key id="8" parent="2" name="PRIMARY">
+      <column id="8" parent="2" name="parent_id">
+        <data-type>int(11)</data-type>
+      </column>
+      <index id="9" parent="2" name="IDX_50159CA9727ACA70">
+        <columns>parent_id</columns>
+        <desc-columns></desc-columns>
+      </index>
+      <key id="10" parent="2" name="PRIMARY">
         <columns>id</columns>
         <primary>1</primary>
       </key>
-      <column id="9" parent="3" name="id">
+      <foreign-key id="11" parent="2" name="FK_50159CA9727ACA70">
+        <columns>parent_id</columns>
+        <ref-key>PRIMARY</ref-key>
+        <cascade-update-rule>restrict</cascade-update-rule>
+        <cascade-delete-rule>restrict</cascade-delete-rule>
+      </foreign-key>
+      <column id="12" parent="3" name="id">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
         <sequence-identity>1</sequence-identity>
       </column>
-      <column id="10" parent="3" name="nom">
+      <column id="13" parent="3" name="nom">
         <mandatory>1</mandatory>
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="11" parent="3" name="prenom">
+      <column id="14" parent="3" name="prenom">
         <mandatory>1</mandatory>
         <data-type>varchar(255)</data-type>
       </column>
-      <key id="12" parent="3" name="PRIMARY">
+      <key id="15" parent="3" name="PRIMARY">
         <columns>id</columns>
         <primary>1</primary>
       </key>
-      <column id="13" parent="4" name="id">
+      <column id="16" parent="4" name="id">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
         <sequence-identity>1</sequence-identity>
       </column>
-      <column id="14" parent="4" name="user_id">
+      <column id="17" parent="4" name="user_id">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="15" parent="4" name="projet_id">
+      <column id="18" parent="4" name="projet_id">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="16" parent="4" name="time">
+      <column id="19" parent="4" name="time">
         <data-type>double</data-type>
       </column>
-      <index id="17" parent="4" name="IDX_A0F81ACAA76ED395">
+      <index id="20" parent="4" name="IDX_A0F81ACAA76ED395">
         <columns>user_id</columns>
         <desc-columns></desc-columns>
       </index>
-      <index id="18" parent="4" name="IDX_A0F81ACAC18272">
+      <index id="21" parent="4" name="IDX_A0F81ACAC18272">
         <columns>projet_id</columns>
         <desc-columns></desc-columns>
       </index>
-      <key id="19" parent="4" name="PRIMARY">
+      <key id="22" parent="4" name="PRIMARY">
         <columns>id</columns>
         <primary>1</primary>
       </key>
-      <foreign-key id="20" parent="4" name="FK_A0F81ACAA76ED395">
+      <foreign-key id="23" parent="4" name="FK_A0F81ACAA76ED395">
         <columns>user_id</columns>
         <ref-key>~.user.PRIMARY</ref-key>
         <cascade-update-rule>restrict</cascade-update-rule>
         <cascade-delete-rule>restrict</cascade-delete-rule>
       </foreign-key>
-      <foreign-key id="21" parent="4" name="FK_A0F81ACAC18272">
+      <foreign-key id="24" parent="4" name="FK_A0F81ACAC18272">
         <columns>projet_id</columns>
         <ref-key>~.projet.PRIMARY</ref-key>
         <cascade-update-rule>restrict</cascade-update-rule>

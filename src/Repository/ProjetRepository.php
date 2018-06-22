@@ -35,14 +35,25 @@ class ProjetRepository extends ServiceEntityRepository
         ;
     }
     */
-    public function findTotalById($projetId){
+    public function findAllChildrenOfChildren(){
         return $this->createQueryBuilder('p')
-            ->select('p.total')
-            ->andWhere('p.id = :id')
-            ->setParameter('id', $projetId)
+            ->andWhere('p.parent IS NOT NULL')
             ->getQuery()
             ->getResult()
             ;
+    }
+    public function findTime(){
+        return $this->createQueryBuilder('p')
+            ->addOrderBy('p.parent', 'ASC')
+            ->addOrderBy('p.nom', 'ASC')
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
+
+    public function findAllRacine(){
+        return $this->findBy(array("parent" => null), array("nom" => "ASC"));
     }
 
     /*

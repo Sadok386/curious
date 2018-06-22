@@ -5,7 +5,9 @@
         "php": "^7.1.3",
         "ext-iconv": "*",
         "components/jquery": "^3.3",
+        "egyg33k/csv-bundle": "^1.0",
         "sensio/framework-extra-bundle": "^5.1",
+        "snilius/twig-sort-by-field": "^0.1.5",
         "symfony/asset": "^4.0",
         "symfony/console": "^4.0",
         "symfony/expression-language": "^4.0",
@@ -24,7 +26,8 @@
         "symfony/web-link": "^4.0",
         "symfony/webpack-encore-pack": "*",
         "symfony/yaml": "^4.0",
-        "twbs/bootstrap": "^4.1"
+        "twbs/bootstrap": "^4.1",
+        "yectep/phpspreadsheet-bundle": "^0.0.4"
     },
     "require-dev": {
         "symfony/browser-kit": "^4.0",
@@ -78,6 +81,6 @@
             "id": "",
             "allow-contrib": false
         },
-        "symfony.id": "01CBYF48X605YXVZWCNQM761EV"
+        "symfony.id": "01CCXMBFND572FKZ4GVF9NG5BT"
     }
 }
